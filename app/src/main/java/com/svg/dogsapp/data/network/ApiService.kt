@@ -10,6 +10,6 @@ interface ApiService {
     //https://dog.ceo/api/breeds/image/random
 
     @GET("/api/breeds/image/random")
-    suspend fun getRandomDog(): DogDTO
+    suspend fun getRandomDogImage(): DogDTO
 
 }
