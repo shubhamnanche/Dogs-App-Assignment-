@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Dogs App</string>
+    <string name="recently_generated_dogs">My Recently Generated Dogs</string>
+    <string name="generate_dog">Generate Dog</string>
+    <string name="no_recently_generated_dogs">No recently generated dogs!</string>
+    <string name="clear">Clear</string>
 </resources>

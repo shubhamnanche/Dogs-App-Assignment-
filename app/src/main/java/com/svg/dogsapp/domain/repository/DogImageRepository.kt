@@ -6,4 +6,6 @@ interface DogImageRepository {
 
     suspend fun getRandomDogImage(): DogImageModel
 
+    suspend fun getRecentDogImages(): List<DogImageModel>
+
 }
