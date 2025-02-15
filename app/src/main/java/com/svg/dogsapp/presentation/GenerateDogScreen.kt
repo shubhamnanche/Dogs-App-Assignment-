@@ -1,5 +1,6 @@
 package com.svg.dogsapp.presentation
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -22,6 +23,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -34,7 +36,7 @@ fun GenerateDogScreen(
     innerPadding: PaddingValues,
     navController: NavController,
     viewModel: DogImageViewModel
-    ) {
+) {
     val result = viewModel.dogImage.value
 
     Column(
@@ -53,16 +55,22 @@ fun GenerateDogScreen(
             fallback = painterResource(id = R.mipmap.ic_launcher_monochrome),
             modifier = Modifier
                 .padding(8.dp)
+                .requiredWidth(200.dp)
+                .aspectRatio(1f)
+                .shadow(
+                    elevation = 8.dp,
+                    shape = RoundedCornerShape(28.dp),
+                    clip = false
+                )
                 .border(
                     width = 1.dp,
                     color = MaterialTheme.colorScheme.primary,
                     shape = RoundedCornerShape(28.dp)
                 )
+                .padding(8.dp)
                 .clip(RoundedCornerShape(20.dp))
                 .clickable(onClick = {})
-                .padding(8.dp)
-                .requiredWidth(200.dp)
-                .aspectRatio(1f)
+                .background(MaterialTheme.colorScheme.surface)
         )
 
         Spacer(modifier = Modifier.height(50.dp))
