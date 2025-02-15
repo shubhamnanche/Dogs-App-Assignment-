@@ -2,15 +2,14 @@ package com.svg.dogsapp.presentation
 
 import android.graphics.Bitmap
 import android.util.Log
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.svg.dogsapp.common.Resource
-import com.svg.dogsapp.common.toBitmap
-import com.svg.dogsapp.common.toByteArray
 import com.svg.dogsapp.data.local.DogDatabase
-import com.svg.dogsapp.domain.model.DogImageEntity
 import com.svg.dogsapp.domain.model.DogImageModel
 import com.svg.dogsapp.domain.use_cases.GetRandomDogImageUseCase
 import com.svg.dogsapp.domain.use_cases.GetRecentDogImagesUseCase
@@ -18,11 +17,9 @@ import com.svg.dogsapp.utils.ImageLruCache
 import com.svg.dogsapp.utils.loadImage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -42,6 +39,8 @@ class DogImageViewModel @Inject constructor(
 
     private val _recentlyGeneratedDogs = mutableStateOf(DogImagesState())
     val recentlyGeneratedDogs: State<DogImagesState> get() = _recentlyGeneratedDogs
+
+    private val imageCache = mutableStateMapOf<String, Bitmap?>()
 
     fun getRandomDogImage() {
         viewModelScope.launch {
@@ -75,12 +74,6 @@ class DogImageViewModel @Inject constructor(
         }
     }
 
-    fun loadImageBitmap(dogImageModel: DogImageModel): Bitmap? {
-        return runBlocking(Dispatchers.IO) {
-            loadImage(dogImageModel.url, imageLruCache)
-        }
-    }
-
     fun clearRecentlyGeneratedDogs() {
         viewModelScope.launch {
             dogDao.clear()
@@ -88,6 +81,17 @@ class DogImageViewModel @Inject constructor(
             Log.d(TAG, "clearRecentlyGeneratedDogs: cleared all!")
         }
     }
+
+    fun loadImageBitmap(dogImageModel: DogImageModel) {
+        if (!imageCache.containsKey(dogImageModel.url)) {
+            viewModelScope.launch(Dispatchers.IO) {
+                val bitmap = loadImage(dogImageModel.url, imageLruCache)
+                imageCache[dogImageModel.url] = bitmap
+            }
+        }
+    }
+
+    fun getBitmapFromCache(url: String): Bitmap? = imageCache[url]
 
 
 }

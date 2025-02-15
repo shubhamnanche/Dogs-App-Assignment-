@@ -4,10 +4,10 @@
     <selectionStates>
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2025-02-15T05:53:52.264936600Z">
+        <DropdownSelection timestamp="2025-02-15T16:21:01.632089600Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="Default" identifier="serial=192.168.0.102:41941;connection=65b8ac5d" />
+              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\saira\.android\avd\5.4_FWVGA_API_22.avd" />
             </handle>
           </Target>
         </DropdownSelection>

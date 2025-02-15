@@ -5,8 +5,6 @@ import android.graphics.BitmapFactory
 import com.svg.dogsapp.data.model.DogDTO
 import com.svg.dogsapp.domain.model.DogImageEntity
 import com.svg.dogsapp.domain.model.DogImageModel
-import com.svg.dogsapp.utils.ImageLruCache
-import com.svg.dogsapp.utils.loadImage
 import com.svg.dogsapp.utils.loadImageOnline
 import java.io.ByteArrayOutputStream
 
@@ -27,14 +25,15 @@ suspend fun DogImageModel.toBitmap(): Bitmap? {
 }
 
 fun Bitmap.compressToByteArray(maxSizeKB: Int = 500): ByteArray {
-    val stream = ByteArrayOutputStream()
-    var quality = 100
-    do {
-        stream.reset()
-        this.compress(Bitmap.CompressFormat.JPEG, quality, stream)
-        quality -= 10
-    } while (stream.toByteArray().size / 1024 > maxSizeKB && quality > 0)
-    return stream.toByteArray()
+    return ByteArrayOutputStream().use { stream ->
+        var quality = 100
+        do {
+            stream.reset()
+            this.compress(Bitmap.CompressFormat.JPEG, quality, stream)
+            quality -= 10
+        } while (stream.toByteArray().size / 1024 > maxSizeKB && quality > 0)
+        stream.toByteArray()
+    }
 }
 
 fun Bitmap.toByteArray(): ByteArray {

@@ -4,25 +4,24 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -51,6 +50,7 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 var showBackButton by remember { mutableStateOf(false) }
                 var currentScreenTitle by remember { mutableStateOf(getString(R.string.app_name)) }
+                val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
                 navController.addOnDestinationChangedListener { controller, destination, arguments ->
                     showBackButton = destination.route != "main_screen"
@@ -64,7 +64,7 @@ class MainActivity : ComponentActivity() {
                 }
 
                 Scaffold(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier.fillMaxSize().nestedScroll(scrollBehavior.nestedScrollConnection),
                     topBar = {
                         MediumTopAppBar(
                             title = {
@@ -84,7 +84,8 @@ class MainActivity : ComponentActivity() {
                                         Text(text = stringResource(id = R.string.back))
                                     }
                                 }
-                            }
+                            },
+                            scrollBehavior = scrollBehavior
                         )
                     }
                 ) { innerPadding ->
