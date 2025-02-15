@@ -7,3 +7,9 @@ data class DogImageState(
     val data: DogImageModel? = null,
     val error: String = ""
 )
+
+data class DogImagesState(
+    val isLoading: Boolean = false,
+    val data: List<DogImageModel>? = null,
+    val error: String = ""
+)

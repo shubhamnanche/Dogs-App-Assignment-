@@ -1,6 +1,7 @@
 package com.svg.dogsapp.data.di
 
-import com.svg.dogsapp.data.local.DogImageDao
+import android.content.Context
+import com.svg.dogsapp.data.local.DogDatabase
 import com.svg.dogsapp.data.network.ApiService
 import com.svg.dogsapp.data.network.BASE_URL
 import com.svg.dogsapp.data.repository.DogImageRepositoryImpl
@@ -9,6 +10,7 @@ import com.svg.dogsapp.utils.ImageLruCache
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -30,20 +32,25 @@ object DataModule {
 
     @Singleton
     @Provides
-    fun provideImageLruCache(): ImageLruCache {
-        return ImageLruCache(maxSize = 1024 * 1024 * 100) //100MB cache size
+    fun provideImageLruCache(
+        dogDatabase: DogDatabase
+    ): ImageLruCache {
+        return ImageLruCache(
+            dogDatabase = dogDatabase,
+            maxSize = 20 //at the most 20 will be stored
+        )
     }
 
     @Singleton
     @Provides
-    fun provideDogImageDao(imageLruCache: ImageLruCache): DogImageDao {
-        return DogImageDao(imageLruCache)
+    fun provideDogDatabase(@ApplicationContext context: Context): DogDatabase {
+        return DogDatabase.getDatabase(context)
     }
 
     @Singleton
     @Provides
-    fun provideDogImageRepo(apiService: ApiService, dogImageDao: DogImageDao): DogImageRepository {
-        return DogImageRepositoryImpl(apiService, dogImageDao)
+    fun provideDogImageRepo(apiService: ApiService, dogDatabase: DogDatabase): DogImageRepository {
+        return DogImageRepositoryImpl(apiService, dogDatabase)
     }
 
 

@@ -22,11 +22,13 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+
+            signingConfig = signingConfigs.getByName("debug") //replace with release
         }
     }
     compileOptions {
@@ -68,6 +70,11 @@ dependencies {
     //Retrofit
     implementation(libs.retrofit2.retrofit)
     implementation(libs.converter.gson)
+
+    //Room
+    implementation(libs.room.runtime)
+    ksp(libs.androidx.room.compiler)
+    implementation(libs.androidx.room.ktx)
 
     //Unit Testing
     testImplementation(libs.junit)

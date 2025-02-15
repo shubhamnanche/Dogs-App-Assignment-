@@ -1,48 +1,44 @@
 package com.svg.dogsapp.utils
 
 import android.graphics.Bitmap
-import android.util.LruCache
+import android.util.Log
+import com.svg.dogsapp.common.toBitmap
+import com.svg.dogsapp.common.toByteArray
+import com.svg.dogsapp.data.local.DogDatabase
+import com.svg.dogsapp.domain.model.DogImageEntity
 
-data class CacheModel(
-    val bitmap: Bitmap,
-    val timestamp: Long
-)
+class ImageLruCache(
+    dogDatabase: DogDatabase,
+    private val maxSize: Int
+) {
+    private val TAG = this::class.java.simpleName
+    private val dogDao = dogDatabase.dogDao()
 
-class ImageLruCache(private val maxSize: Int) {
-
-    private val cache: LruCache<String, CacheModel> =
-        object : LruCache<String, CacheModel>(maxSize) {
-            override fun sizeOf(key: String, value: CacheModel): Int {
-                return value.bitmap.byteCount
-            }
-        }
-
-    fun getBitmap(url: String): Bitmap? {
-        val cacheModel = cache.get(url)
-        return cacheModel.bitmap
+    suspend fun putBitmap(url: String, bitmap: Bitmap) {
+        saveBitmapToDatabase(url, bitmap)
+        enforceMaxSizeLimit()
     }
 
-    fun putBitmap(url: String, bitmap: Bitmap) {
-        val cacheModel = CacheModel(bitmap, System.currentTimeMillis())
-        cache.put(url, cacheModel)
-        removeLRU(20)
-    }
-
-    fun removeLRU(keepSize: Int) {
-        val currentValues = cache.snapshot().toList()
-        val currentSize = currentValues.size
-        if (currentSize > keepSize) {
-            currentValues.sortedBy { it.second.timestamp }.take(currentSize - keepSize).forEach {
-                cache.remove(it.first)
-            }
+    private suspend fun enforceMaxSizeLimit() {
+        val count = dogDao.getCount()
+        if (count > maxSize) {
+            dogDao.deleteOldest()
         }
     }
 
-    fun getKeys(): Set<String> {
-        return cache.snapshot().keys
+    private suspend fun saveBitmapToDatabase(url: String, bitmap: Bitmap) {
+        val byteArray = bitmap.toByteArray()
+        val entity = DogImageEntity(0, url, byteArray, System.currentTimeMillis())
+        dogDao.insert(entity)
+        Log.d(TAG, "saveBitmapToDatabase: success!")
+        enforceMaxSizeLimit()
     }
 
-    fun clear() {
-        cache.evictAll()
+    suspend fun getBitmap(url: String): Bitmap? {
+        return dogDao.getByUrl(url)?.bitmapBytes?.toBitmap()
+    }
+
+    suspend fun clear() {
+        dogDao.clear()
     }
 }

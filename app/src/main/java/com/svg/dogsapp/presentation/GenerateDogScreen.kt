@@ -1,5 +1,7 @@
 package com.svg.dogsapp.presentation
 
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,6 +16,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -43,16 +46,23 @@ fun GenerateDogScreen(
     ) {
 
         AsyncImage(
-            model = result.data?.message,
+            model = result.data?.url,
             contentDescription = "Dog Image",
             contentScale = ContentScale.Crop,
             error = painterResource(id = R.drawable.ic_error),
             fallback = painterResource(id = R.mipmap.ic_launcher_monochrome),
             modifier = Modifier
-                .padding(16.dp)
+                .padding(8.dp)
+                .border(
+                    width = 1.dp,
+                    color = MaterialTheme.colorScheme.primary,
+                    shape = RoundedCornerShape(28.dp)
+                )
+                .clip(RoundedCornerShape(20.dp))
+                .clickable(onClick = {})
+                .padding(8.dp)
                 .requiredWidth(200.dp)
                 .aspectRatio(1f)
-                .clip(RoundedCornerShape(20.dp))
         )
 
         Spacer(modifier = Modifier.height(50.dp))

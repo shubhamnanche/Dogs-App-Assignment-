@@ -11,17 +11,10 @@ suspend fun loadImage(url: String, imageLruCache: ImageLruCache): Bitmap? {
     if (cachedBitmap != null) {
         return cachedBitmap
     }
-
-    return withContext(Dispatchers.IO) {
-        val bitmap = loadImageBitmap(url)
-        if (bitmap != null) {
-            imageLruCache.putBitmap(url, bitmap)
-        }
-        bitmap
-    }
+    return loadImageOnline(url)
 }
 
-suspend fun loadImageBitmap(url: String): Bitmap? {
+suspend fun loadImageOnline(url: String): Bitmap? {
     return withContext(Dispatchers.IO) {
         try {
             val inputStream = URL(url).openStream()

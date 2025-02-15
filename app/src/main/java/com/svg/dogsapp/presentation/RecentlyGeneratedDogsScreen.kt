@@ -3,7 +3,10 @@ package com.svg.dogsapp.presentation
 import android.graphics.Bitmap
 import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.aspectRatio
@@ -14,11 +17,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -36,11 +41,22 @@ fun RecentlyGeneratedDogsScreen(
     viewModel: DogImageViewModel
 ) {
     val TAG = "RecentDogsScreen"
-    val recentlyGeneratedDogs = viewModel.recentlyGeneratedDogs.collectAsState()
+    val result = viewModel.recentlyGeneratedDogs.value
 
     LaunchedEffect(Unit) {
         viewModel.getRecentlyGeneratedDogs()
-        Log.d(TAG, "RecentDogsScreen: size > ${recentlyGeneratedDogs.value.size}")
+        Log.d(TAG, "RecentDogsScreen: size > ${result.data?.size}")
+    }
+
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        if (result.isLoading) {
+            CircularProgressIndicator()
+        }
+        if (result.error.isNotBlank()) {
+            SelectionContainer {
+                Text(text = result.error)
+            }
+        }
     }
 
     Column(
@@ -50,7 +66,6 @@ fun RecentlyGeneratedDogsScreen(
             .fillMaxSize()
             .padding(innerPadding)
     ) {
-
         LazyRow(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically,
@@ -58,16 +73,19 @@ fun RecentlyGeneratedDogsScreen(
                 .fillMaxWidth()
                 .fillMaxHeight(fraction = 0.8f)
         ) {
-            if (recentlyGeneratedDogs.value.isEmpty()) {
+            if (result.data?.isEmpty() == true) {
                 item {
                     Text(text = stringResource(id = R.string.no_recently_generated_dogs))
                 }
             } else {
-                items(recentlyGeneratedDogs.value.size) {
-                    viewModel.loadImageBitmap(recentlyGeneratedDogs.value[it])?.let { bitmap ->
-                        DogImage(bitmap = bitmap)
+                result.data?.let { dogs ->
+                    items(dogs.size) {
+                        viewModel.loadImageBitmap(dogs[it])?.let { bitmap ->
+                            DogImage(bitmap = bitmap)
+                        }
                     }
                 }
+
             }
 
         }
@@ -88,9 +106,17 @@ fun DogImage(bitmap: Bitmap) {
         contentDescription = "Dog Image",
         contentScale = ContentScale.Crop,
         modifier = Modifier
-            .padding(16.dp)
+            .padding(8.dp)
+            .border(
+                width = 1.dp,
+                color = MaterialTheme.colorScheme.primary,
+                shape = RoundedCornerShape(28.dp)
+            )
+            .clip(RoundedCornerShape(20.dp))
+            .clickable(onClick = {})
+            .padding(8.dp)
             .requiredWidth(200.dp)
             .aspectRatio(1f)
-            .clip(RoundedCornerShape(20.dp))
+
     )
 }
