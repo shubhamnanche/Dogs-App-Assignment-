@@ -9,3 +9,6 @@ val Pink80 = Color(0xFFEFB8C8)
 val Purple40 = Color(0xFF6650a4)
 val PurpleGrey40 = Color(0xFF625b71)
 val Pink40 = Color(0xFF7D5260)
+
+val Color.Companion.ButtonColor: Color get() = Color(red = 66, green = 134, blue = 244)
+val Color.Companion.ButtonColorDark: Color get() = Color(red = 70, green = 134, blue = 240)

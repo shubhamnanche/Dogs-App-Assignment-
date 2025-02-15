@@ -3,11 +3,8 @@ package com.svg.dogsapp.data.local
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
-import com.svg.dogsapp.common.Resource
 import com.svg.dogsapp.domain.local.DogDao
 import com.svg.dogsapp.domain.model.DogImageEntity
-import kotlinx.coroutines.flow.Flow
-import okhttp3.Response
 
 @Dao
 interface DogDao: DogDao {

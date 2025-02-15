@@ -1,9 +1,6 @@
 package com.svg.dogsapp.domain.local
 
-import com.svg.dogsapp.common.Resource
 import com.svg.dogsapp.domain.model.DogImageEntity
-import kotlinx.coroutines.flow.Flow
-import okhttp3.Response
 
 interface DogDao {
     suspend fun getAll(): List<DogImageEntity>

@@ -25,9 +25,7 @@ class GetRandomDogImageUseCase(
             emit(Resource.Success(data = dogImage))
             loadImage(dogImage.url, imageLruCache)?.let {
                 imageLruCache.putBitmap(dogImage.url,
-                    it.compressToByteArray(80)
-                        //80 kB * 20 images= 1600kB < 2000kB (CursorWindow limit SQLiteBlobTooBigException)
-                    .toBitmap()
+                    it.compressToByteArray(80).toBitmap()
                 )
             }
             Log.d(TAG, "Image data: ${dogImage.url}")
